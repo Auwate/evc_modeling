@@ -1,0 +1,142 @@
+@startuml EVC
+
+/' Python '/
+
+class EvcPath {
+
+    - paths: List<NNI>
+
+    /' Overrides '/
+        + __init__(paths: List<NNI>): None
+        + __iter__(): NNI
+
+    /' Getter | Setter '/
+        + paths(): List<NNI>
+        + paths(paths: List<NNI>): None
+
+    /' Public methods '/
+        + test_paths(paths: List<NNI>): List<NNI>
+        + convert_to_nnis(paths: List<Dict<String, object>>): List<NNI>
+        + has_backup(): bool
+        + get_path(path_type: int, full_format: bool): String | List<String>
+        + get_primary_path(full_format: bool, primary: int): String | List<String>
+        + get_backup_path(full_format: bool, backup: int): String | List<String>
+
+    /' Static methods '/
+        + convert_to_nni(nni: Dict<String, object>): NNI
+
+}
+
+note top of EvcPath
+    Manages the logic for converting, retreiving, and testing paths.
+end note
+
+note left of EvcPath::test_paths
+    Tests the validity of the path. Converts to NNI if a path is a Dict
+end note
+
+note left of EvcPath::get_path
+    Returns "Unset" if the requested path is unavailable, or a List of Strings if available.
+end note
+
+
+class UNIS {
+
+    - unis: List<UNI>
+
+    /' Overrides '/
+        + __init__(): None
+
+    /' Getters / Setters '/
+        + unis(): List<UNI>
+        + unis(unis: List<UNI>): None
+
+    /' Public methods '/
+        + import_unis(unis: List[Dict[String, object]]): None
+
+}
+
+note right of UNIS::import_unis
+    Converts a list of dictionaries into a list of UNI objects, then updates itself 
+end note
+
+note top of UNIS
+    Manages the list of UNI objects
+end note
+
+class EthernetVirtualCircuit {
+
+    - name: int
+    - provisioning_time: int
+    - decommissioning_time: int
+    - tenant: int
+    - priority: int
+    - external_id: int
+    - metrics: Metrics
+    - current_config: CurrentConfig
+    - monitoring: Monitoring
+    - notifications: Notifications
+
+    /' Overrides '/
+        + __init__(): None
+        + __eq__(other: EthernetVirtualCircuit)
+
+    /' Getters / Setters '/
+        + name(): String
+        + name(evc_name: String): None
+        + provisioning_time(): int
+        + provisioning_time(time: int): None
+        + decommissioning_time(): int
+        + decommissioning_time(time: int): None
+        + tenant(): int
+        + tenant(tenant: int): None
+        + priority(): int
+        + priority(priority: int): None
+        + external_id(): int
+        + external_id(external_id: int): None
+        + current_config(): CurrentConfig
+        + current_config(curr_config: CurrentConfig): None
+        + metrics(): Metrics
+        + metrics(metrics: Metrics): None
+        + monitoring(): Monitoring
+        + monitoring(monitoring: Monitoring): None
+        + notifications(): Notifications
+        + notifications(notifications: Notifications): None
+
+    /' Public methods '/
+        + is_using_backup_path(): bool
+
+}
+
+note right of EthernetVirtualCircuit
+    Represents an EVC. Handles all internal details, specific to an EVC object
+end note
+
+class NNI {
+
+}
+
+class UNI {
+
+}
+
+class Metrics {
+
+}
+
+class CurrentConfig {
+
+}
+
+class Monitoring {
+
+}
+
+class Notifications {
+
+}
+
+EvcPath <|-- EthernetVirtualCircuit
+UNIS <|-- EthernetVirtualCircuit
+
+@enduml
