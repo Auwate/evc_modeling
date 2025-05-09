@@ -1,0 +1,341 @@
+@startuml diagram
+
+/' Python '/
+
+class EvcPath {
+
+    - paths: List<NNI>
+
+    /' Overrides '/
+        + __init__(paths: List<NNI>): None
+        + __iter__(): NNI
+
+    /' Getter | Setter '/
+        + paths(): List<NNI>
+        + paths(paths: List<NNI>): None
+
+    /' Public methods '/
+        + test_paths(paths: List<NNI>): List<NNI>
+        + convert_to_nnis(paths: List<Dict<String, object>>): List<NNI>
+        + has_backup(): bool
+        + get_path(path_type: int, full_format: bool): String | List<String>
+        + get_primary_path(full_format: bool, primary: int): String | List<String>
+        + get_backup_path(full_format: bool, backup: int): String | List<String>
+
+    /' Static methods '/
+        + convert_to_nni(nni: Dict<String, object>): NNI
+
+}
+
+note top of EvcPath
+    Describes the path an EVC takes. Manages a list of NNI objects.
+end note
+
+note left of EvcPath::test_paths
+    Tests the validity of the path. Converts to NNI if a path is a Dict
+end note
+
+note left of EvcPath::get_path
+    Returns "Unset" if the requested path is unavailable, or a List of Strings if available.
+end note
+
+
+class UNIS {
+
+    - unis: List<UNI>
+
+    /' Overrides '/
+        + __init__(): None
+
+    /' Getters / Setters '/
+        + unis(): List<UNI>
+        + unis(unis: List<UNI>): None
+
+    /' Public methods '/
+        + import_unis(unis: List[Dict[String, object]]): None
+
+}
+
+note right of UNIS::import_unis
+    Converts a list of dictionaries into a list of UNI objects, then updates itself 
+end note
+
+note top of UNIS
+    Manages the list of UNI objects. There is only two, being the source and destination
+end note
+
+class User_to_Network_Inteface___UNI {
+
+    - device: str
+    - interface_name: str
+    - interface_description: str
+    - tag: Tag
+
+    /' Overrides '/
+        + __eq__(other: UNI): bool
+
+    /' Getters / Setters '/
+        + device(): str
+        + device(new_dev: str): None
+        + interface_name(): str
+        + interface_name(new_int_name: str): None
+        + interface_description(): str
+        + interface_description(new_int_desc: str): None
+        + tag(): Tag
+        + tag(new_tag: Tag): None
+
+}
+
+note top of User_to_Network_Inteface___UNI
+    Describes the connection (using the device name, interface, and tag details) to a source/destination device.
+end note
+
+class Ethernet_Virtual_Circuit___EVC {
+
+    - name: int
+    - provisioning_time: int
+    - decommissioning_time: int
+    - tenant: int
+    - priority: int
+    - external_id: int
+    - metrics: Metrics
+    - current_config: CurrentConfig
+    - monitoring: Monitoring
+    - notifications: Notifications
+
+    /' Overrides '/
+        + __init__(): None
+        + __eq__(other: EthernetVirtualCircuit)
+
+    /' Getters / Setters '/
+        + name(): String
+        + name(evc_name: String): None
+        + provisioning_time(): int
+        + provisioning_time(time: int): None
+        + decommissioning_time(): int
+        + decommissioning_time(time: int): None
+        + tenant(): int
+        + tenant(tenant: int): None
+        + priority(): int
+        + priority(priority: int): None
+        + external_id(): int
+        + external_id(external_id: int): None
+        + current_config(): CurrentConfig
+        + current_config(curr_config: CurrentConfig): None
+        + metrics(): Metrics
+        + metrics(metrics: Metrics): None
+        + monitoring(): Monitoring
+        + monitoring(monitoring: Monitoring): None
+        + notifications(): Notifications
+        + notifications(notifications: Notifications): None
+
+    /' Public methods '/
+        + is_using_backup_path(): bool
+
+}
+
+note bottom of Ethernet_Virtual_Circuit___EVC
+    Represents a virtual circuit between two devices, handled over an ethernet connection. Contains all the relevant internal data that comprises a circuit, including the path it takes across devices to get there.
+end note
+
+class Network_to_Network_Interface___NNI {
+
+    - device_a: str
+    - interface_a: str
+    - device_z: str
+    - interface_z: str
+    - name: str
+
+    /' Overrides '/
+        + __repr__(): str
+
+    /' Getters / Setters '/
+        + device_a(): str
+        + device_a(dev_a: str): None
+        + interface_a(): str
+        + interface_a(int_a: str): None
+        + device_z(): str
+        + device_z(dev_z: str): None
+        + interface_z(): str
+        + interface_z(int_z: str): None
+        + name(): str
+        + name(new_name: str): None
+
+    /' Public methods '/
+        + import_dict(nni: Dict<str, str>): NNI
+
+}
+
+note top of Network_to_Network_Interface___NNI
+    Describes the connection between devices on a path. It uses the interfaces they use to interact, as well as the source/destination devices.
+end note
+
+class MacAddresses {
+
+    - mac_addresses: List<MacAddress>
+
+    /' Getters / Setters '/
+        + mac_addresses(): List<MacAddress>
+        + mac_addresses(new_addresses: List<MacAddress>): None
+
+    /' Public methods '/
+        + add_mac_address(mac_address: MacAddress)
+
+}
+
+note top of MacAddresses
+    Manages the list of Mac addresses 
+end note
+
+class MacAddress {
+
+    - mac_address: str
+
+    /' Getters / Setters '/
+        + mac_address(): str
+        + mac_address(new_mac_addr: str): None
+
+    /' Static method '/
+        + is_valid(mac_address): bool
+
+}
+
+note top of MacAddress
+    Contains the Mac address of a device.
+end note
+
+class Tag {
+
+    - type: str
+    - value: Union<int, str, List[List[int]]>
+
+    /' Overrides '/
+        + __eq__(other: Tag): bool
+        + __repr__(): str
+
+    /' Getters / Setters '/
+        + type(): str
+        + type(new_type: str): None
+        + value(): Union<int, str, List[List[int]]>
+        + value(new_val: Union<int, str, List[List[int]]>): None
+
+    /' Public methods '/
+        + contains_value(tag_value: Union<int, str, List[List[int]]>): bool
+
+    /' Private methods '/
+        - equals_evc(other: Union<int, str, List[List[int]]>): bool
+        - assert_valid_int(uni_value: int): bool
+        - assert_valid_str(uni_value: str): bool
+        - assert_valid_type(uni_type: str): bool
+        - format_uni_type(uni_type: str): str
+        - is_vlan(): bool
+
+}
+
+note top of Tag
+    Manages the details of a connection, such as the VLAN type and its integer/str/range reservation.
+end note
+
+note left of Tag::value
+    Can be an integer, 'untagged', or a range of integers.
+end note
+
+class Metrics {
+
+    - min_bandwidth: int
+    - max_delay: int
+    - max_hops: int
+    - avoid_shared: int
+
+    /' Getter / Setters '/
+        + min_bandwidth(): int
+        + min_bandwidth(min_bw: int): None
+        + max_delay(): int
+        + max_delay(max_d: int): None
+        + max_hops(): int
+        + max_hops(max_h: int): None
+        + avoid_shared(): int
+        + avoid_shared(avoid_s: int): None
+
+    /' Public methods '/
+        + import_json(metrics: Dict<str, str>): None
+
+}
+
+note top of Metrics
+    Describes the network metrics an EVC must have.
+end note
+
+class CurrentConfig {
+
+    - is_active: bool
+    - is_optimized: bool
+    - is_expired: bool
+    - is_up: bool
+    - is_backup: bool
+    - current_path: List<NNI>
+    - backend: str
+    - backend_evc_id: Union<str, int>
+
+    /' Getters / Setters '/
+        + is_active(): bool
+        + is_active(new_is_active: bool): None
+        + is_optimized(): bool
+        + is_optimized(new_is_optimized: bool): None
+        + is_expired(): bool
+        + is_expired(new_is_expired: bool): None
+        + is_up(): bool
+        + is_up(new_is_up: bool): None
+        + is_backup(): bool
+        + is_backup(new_is_backup: bool): None
+        + current_path(): List<NNI>
+        + current_path(new_path: List<NNI>): None
+        + backend(): str
+        + backend(new_backend: str): None
+        + backend_evc_id(): Union<str, int>
+        + backend_evc_id(new_id: Union<str, int>): None
+
+    /' Public methods '/
+        + import_json(curr_config: Dict<str, any>): None
+        + get_current_path(): str
+
+}
+
+note left of CurrentConfig
+    Describes the current EVC's configurations
+end note
+
+class Monitoring {
+    /' Empty currently '/
+}
+
+note top of Monitoring
+    Currently empty. Would describe how an EVC is monitored, such as via Prometheus.
+end note
+
+class Notifications {
+    /' Empty currently '/
+}
+
+note top of Notifications
+    Currently empty. Would describe how notifications are handled for EVC events, such as recreating the path.
+end note
+
+/' Dependencies '/
+Tag <.. User_to_Network_Inteface___UNI
+User_to_Network_Inteface___UNI <.. UNIS
+MacAddress <.. MacAddresses
+Network_to_Network_Interface___NNI <.. EvcPath
+Metrics <.. Ethernet_Virtual_Circuit___EVC
+CurrentConfig <.. Ethernet_Virtual_Circuit___EVC
+Network_to_Network_Interface___NNI <.. CurrentConfig
+Monitoring <.. Ethernet_Virtual_Circuit___EVC
+Notifications <.. Ethernet_Virtual_Circuit___EVC
+
+/' Extensions '/
+
+EvcPath <|-- Ethernet_Virtual_Circuit___EVC
+UNIS <|-- Ethernet_Virtual_Circuit___EVC
+MacAddresses <|-- User_to_Network_Inteface___UNI
+
+@enduml
