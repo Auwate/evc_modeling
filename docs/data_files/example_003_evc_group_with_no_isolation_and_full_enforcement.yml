@@ -1,0 +1,35 @@
+evc_group:
+  name: MyGroup
+  intent:
+    bandwidth: 5
+    isolation: NONE
+    enforcement: COMPLETE
+  evcs:
+    - name: EVC1
+      unis:
+        uni_1:
+          device: SouthernLight1
+          interface: eth1
+          tag:
+            type: VLAN
+            value: '[100, 101]'
+        uni_2:
+          device: SouthernLight2
+          interface: eth2
+          tag:
+            type: VLAN
+            value: '[100, 101]'
+    - name: EVC2
+      unis:
+        uni_1:
+          device: sw2
+          interface: 1
+          tag:
+            type: range
+            value: '[100, 200]'
+        uni_2:
+          device: sw3
+          interface: eth0
+          tag:
+            type: range
+            value: "[100, 200]"

@@ -1,0 +1,36 @@
+evc_group:
+  name: str(required=True)
+  intent: include('intent', required=True)
+  evcs: list(include('evc'), required=True)
+
+---
+
+intent:
+  bandwidth: int(required=False)
+  isolation: enum('FULL', 'LESS_THAN_1', 'LESS_THAN_2', 'LESS_THAN_3', 'NONE', required=True)
+  enforcement: enum('FULL', 'UNLESS_NECESSARY', 'NONE', required=True)
+
+---
+
+evc:
+  name: str(required=False)
+  unis: include('unis', required=True)
+
+---
+
+unis:
+  uni_1: include('uni', required=True)
+  uni_2: include('uni', required=True)
+
+---
+
+uni:
+  device: str(required=True)
+  interface: any(str(), int(), required=True)
+  tag: include('tag', required=True)
+
+---
+
+tag:
+  type: str(required=True)
+  value: any(int(), str(), required=True)
