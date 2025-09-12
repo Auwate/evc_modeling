@@ -1,0 +1,163 @@
+@startuml diagram
+
+class EVC_Group {
+    
+    /' Describes a clients request, fulfilled via restrictions on how the EVC is '/
+    /' provisioned, etc.'/
+
+    - owner: String
+    - evcs: List<EVC>
+    - intent: Intent
+
+}
+
+note left of EVC_Group
+    Describes a clients request, fulfilled via restrictions on how the
+    EVC is provisioned, etc.
+end note
+
+class Intent {
+
+    /' Describes what the client requested when provisioning their circuit. Each '/
+    /' EVC must implement the required intent for the EVC_Group.'/
+
+    - bandwidth: int
+    - isolation: CircuitIsolation
+    - enforce: IsolationEnforcement
+
+}
+
+note left of Intent
+    Describes what the client requested when provisioning their circuit.
+    Each EVC must implement the required intent for the EVC_Group.
+end note
+
+enum CircuitIsolation {
+    FULL
+    LESS_THAN_1
+    LESS_THAN_2
+    LESS_THAN_3
+    NONE
+}
+
+note left of CircuitIsolation
+    An Enum that represents how isolated each EVC should be from each other.
+
+    FULL represents that any two EVCs should not be part of the same AssetGroup.
+    LESS_THAN_1 represents that they should not be part of more than 1 AssetGroup.
+    LESS_THAN_2 represents the same but with no more than 2 AssetGroups.
+    LESS_THAN_3 represents the same but with no more than 3 AssetGroups.
+    NONE represents that any two EVCs can share as many AssetGroups as needed.
+        - Prioritizes uptime than constraint guarantees.
+end note
+
+enum IsolationEnforcement {
+    COMPLETE
+    UNLESS_NECESSARY
+    NONE
+}
+
+note left of IsolationEnforcement
+    An Enum that represents how much we want to enforce the isolation constraint.
+
+    COMPLETE represents that any two EVCs must ALWAYS enforce their isolation constraint. Drop if it cannot.
+    UNLESS_NECESSARY represents that enforcement should be maintained unless it is impossible to guarantee.
+    NONE represents that enforcement is lax.
+        - Prioritizes uptime than constraint guarantees.
+end note
+
+class EVC {
+
+    - ...
+
+}
+
+class EvcPath {
+
+    - paths: List<List<NNI>>
+
+    /' Public methods '/
+        + test_paths(paths: List<NNI>): List<NNI>
+        + convert_to_nnis(paths: List<Dict<String, object>>): List<NNI>
+        + has_backup(): bool
+        + get_primary_path(full_format: bool): String | List<String>
+        + get_backup_path(full_format: bool): String | List<String>
+
+    /' Static methods '/
+        + convert_to_nni(nni: Dict<String, object>): NNI
+
+}
+
+note top of EvcPath
+    Describes the path an EVC takes. Manages a list of lists, where each inner list is a path (collection of NNIs).
+end note
+
+note left of EvcPath::test_paths
+    Tests the validity of the path. Converts to NNI if a path is a Dict
+end note
+
+note left of EvcPath::get_path
+    Returns "Unset" if the requested path is unavailable, or a List of Strings if available.
+end note
+
+class NNI {
+
+    - device_a: str
+    - interface_a: str
+    - device_z: str
+    - interface_z: str
+    - name: str
+
+    /' Public methods '/
+        + import_dict(nni: Dict<str, str>): NNI
+
+}
+
+note left of NNI
+    Describes the connection between devices on a path. It uses the interfaces they use to interact, as well as the source/destination devices.
+end note
+
+class AssetGroups {
+
+    - List<AssetGroup>
+
+}
+
+note left of AssetGroups
+    Holds a List of AssetGroup objects
+end note
+
+class AssetGroup {
+
+    - assets: List<NNI>
+    - name: String
+
+}
+
+note left of AssetGroup
+    Describes a List of NNIs whom all share infrastructure, making each vulnerable to the same outages.
+end note
+
+class EVC_Groups {
+
+    - groups: List<EVC_Group>
+    - asset_groups: List<AssetGroups>
+
+    + validate_groups(): bool
+
+}
+
+
+EVC_Group <.. EVC_Groups
+AssetGroups <.. EVC_Groups
+Intent <.. EVC_Group
+EVC <.. EVC_Group
+EvcPath <|-- EVC
+NNI <.. EvcPath
+CircuitIsolation <.. Intent
+IsolationEnforcement <.. Intent
+
+AssetGroup <.. AssetGroups
+NNI <.. AssetGroup
+
+@enduml

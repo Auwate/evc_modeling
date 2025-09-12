@@ -1,0 +1,49 @@
+evc_group:
+  name: MyGroup
+  intent:
+    bandwidth: 100
+    isolation: NONE
+    enforcement: NONE
+  evcs:
+    - name: EVC1
+      unis:
+        uni_1:
+          device: sw1
+          interface: 1
+          tag:
+            type: VLAN
+            value: 100
+        uni_2:
+          device: sw2
+          interface: eth0
+          tag:
+            type: VLAN
+            value: 100
+    - name: EVC2
+      unis:
+        uni_1:
+          device: sw2
+          interface: 1
+          tag:
+            type: range
+            value: '[100, 200]'
+        uni_2:
+          device: sw3
+          interface: eth0
+          tag:
+            type: range
+            value: "[100, 200]"
+    - name: EVC3
+      unis:
+        uni_1:
+          device: sw3
+          interface: 1
+          tag:
+            type: untagged
+            value: untagged
+        uni_2:
+          device: sw4
+          interface: eth0
+          tag:
+            type: untagged
+            value: untagged
